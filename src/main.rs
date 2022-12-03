@@ -12,7 +12,6 @@ fn main() {
 
     let results: (isize, isize);
 
-    // ugly asf
     match day {
         1 => {
             results = day1::day1();
