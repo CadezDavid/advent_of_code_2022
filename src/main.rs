@@ -1,5 +1,6 @@
 mod day1;
 mod day2;
+mod day3;
 
 use std::env;
 
@@ -19,6 +20,9 @@ fn main() {
         }
         2 => {
             results = day2::day2();
+        }
+        3 => {
+            results = day3::day3();
         }
         _ => {
             println!("Not solved yet.");
