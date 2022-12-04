@@ -1,4 +1,3 @@
-//use std::cmp;
 use std::fs;
 
 pub(crate) fn day3() -> (isize, isize) {
@@ -16,7 +15,7 @@ pub(crate) fn day3() -> (isize, isize) {
     let sum1 = contents
         .lines()
         .map(|s| {
-            let (a, b) = s.split_at(s.len() / 2);
+            let (a, b) = s.split_at(s.len() / 3);
             value(&(*a).chars().find(|c| b.contains(*c)).unwrap())
         })
         .sum();
@@ -25,7 +24,7 @@ pub(crate) fn day3() -> (isize, isize) {
     let mut n = 0;
     let mut groups = Vec::new();
     while (n + 2) < lines.len() {
-        groups.push((lines[n], lines[n+1], lines[n+2]));
+        groups.push((lines[n], lines[n + 1], lines[n + 2]));
         n += 3;
     }
 
@@ -33,7 +32,12 @@ pub(crate) fn day3() -> (isize, isize) {
         .iter()
         .map(|s| {
             let (a, b, c) = s;
-            value(&(*a).chars().find(|d| b.contains(*d) && c.contains(*d)).unwrap())
+            value(
+                &(*a)
+                    .chars()
+                    .find(|d| b.contains(*d) && c.contains(*d))
+                    .unwrap(),
+            )
         })
         .sum();
 
