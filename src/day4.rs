@@ -6,23 +6,23 @@ pub(crate) fn day4() -> (isize, isize) {
 
     let sum1 = contents
         .lines()
-        .map(|s| s.split_once(',').unwrap())
-        .map(|(a, b)| (a.split_once('-').unwrap(), b.split_once('-').unwrap()))
-        .map(|((a1, a2), (b1, b2))| {
-            (b1.parse::<isize>().unwrap() - a1.parse::<isize>().unwrap())
-                * (b2.parse::<isize>().unwrap() - a2.parse::<isize>().unwrap())
+        .map(|s| {
+            s.split(['-', ','].as_ref())
+                .map(|s| s.parse::<isize>().unwrap())
+                .collect()
         })
+        .map(|v: Vec<_>| (v[2] - v[0]) * (v[3] - v[1]))
         .filter(|t| t <= &0)
         .count();
 
     let sum2 = contents
         .lines()
-        .map(|s| s.split_once(',').unwrap())
-        .map(|(a, b)| (a.split_once('-').unwrap(), b.split_once('-').unwrap()))
-        .map(|((a1, a2), (b1, b2))| {
-            (b1.parse::<isize>().unwrap() - a2.parse::<isize>().unwrap())
-                * (b2.parse::<isize>().unwrap() - a1.parse::<isize>().unwrap())
+        .map(|s| {
+            s.split(['-', ','].as_ref())
+                .map(|s| s.parse::<isize>().unwrap())
+                .collect()
         })
+        .map(|v: Vec<_>| (v[2] - v[1]) * (v[3] - v[0]))
         .filter(|t| t <= &0)
         .count();
 
