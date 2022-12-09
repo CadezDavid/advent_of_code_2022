@@ -1,10 +1,6 @@
-use std::fs;
-
-pub(crate) fn day4() -> (isize, isize) {
-    let file_path = "data/day4.in";
-    let contents = fs::read_to_string(file_path).expect("Wheres the file??");
-
-    let sum1 = contents
+use crate::Solution;
+pub fn solve(input: &str) -> Solution {
+    let sum1 = input
         .lines()
         .map(|s| {
             s.split(['-', ','].as_ref())
@@ -15,7 +11,7 @@ pub(crate) fn day4() -> (isize, isize) {
         .filter(|t| t <= &0)
         .count();
 
-    let sum2 = contents
+    let sum2 = input
         .lines()
         .map(|s| {
             s.split(['-', ','].as_ref())
@@ -26,5 +22,5 @@ pub(crate) fn day4() -> (isize, isize) {
         .filter(|t| t <= &0)
         .count();
 
-    (sum1.try_into().unwrap(), sum2.try_into().unwrap())
+    Solution::Isize(sum1.try_into().unwrap(), sum2.try_into().unwrap())
 }

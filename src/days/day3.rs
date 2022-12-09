@@ -1,8 +1,6 @@
-use std::fs;
+use crate::Solution;
 
-pub(crate) fn day3() -> (isize, isize) {
-    let file_path = "data/day3.in";
-    let contents = fs::read_to_string(file_path).expect("Wheres the file??");
+pub fn solve(input: &str) -> Solution {
 
     fn value(c: &char) -> isize {
         if (*c as isize) < ('a' as isize) {
@@ -12,7 +10,7 @@ pub(crate) fn day3() -> (isize, isize) {
         }
     }
 
-    let sum1 = contents
+    let sum1 = input
         .lines()
         .map(|s| {
             let (a, b) = s.split_at(s.len() / 3);
@@ -20,7 +18,7 @@ pub(crate) fn day3() -> (isize, isize) {
         })
         .sum();
 
-    let lines: Vec<&str> = contents.lines().collect();
+    let lines: Vec<&str> = input.lines().collect();
     let mut n = 0;
     let mut groups = Vec::new();
     while (n + 2) < lines.len() {
@@ -41,5 +39,5 @@ pub(crate) fn day3() -> (isize, isize) {
         })
         .sum();
 
-    (sum1, sum2)
+    Solution::Isize(sum1, sum2)
 }
