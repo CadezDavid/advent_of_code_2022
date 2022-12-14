@@ -1,8 +1,8 @@
 use crate::Solution;
+use itertools::Itertools;
+use serde_json::{from_str, Value};
 use std::cmp::Ordering::{self, Equal, Less};
 use std::iter::zip;
-use itertools::Itertools;
-use serde_json::Value;
 pub fn solve(input: &str) -> Solution {
     #[derive(Debug, Clone)]
     enum Packet {
@@ -14,7 +14,11 @@ pub fn solve(input: &str) -> Solution {
         fn try_from(value: Value) -> Result<Self, Self::Error> {
             match value {
                 Value::Number(num) => Ok(El(num.as_u64().unwrap() as isize)),
-                Value::Array(arr) => Ok(List(arr.iter().map(|v| Packet::try_from(v.clone()).unwrap()).collect())),
+                Value::Array(arr) => Ok(List(
+                    arr.iter()
+                        .map(|v| Self::try_from(v.clone()).unwrap())
+                        .collect(),
+                )),
                 _ => Err("Invalid Packet".to_owned()),
             }
         }
@@ -23,52 +27,39 @@ pub fn solve(input: &str) -> Solution {
     use Packet::{El, List};
     fn leq(left: &Packet, right: &Packet) -> Ordering {
         match (left, right) {
-            (List(l), List(r)) => {
-                match zip(l, r).map(|(x, y)| leq(&x, &y)).find(|x| *x != Equal) {
-                    Some(x) => x,
-                    None => l.len().cmp(&r.len()),
-                }
-            }
+            (List(l), List(r)) => zip(l, r)
+                .map(|(x, y)| leq(&x, &y))
+                .find(|x| *x != Equal)
+                .unwrap_or(l.len().cmp(&r.len())),
             (El(l), El(r)) => l.cmp(&r),
             (El(_), List(_)) => leq(&List(vec![left.clone()]), right),
             (List(_), El(_)) => leq(left, &List(vec![right.clone()])),
         }
     }
-    // fn to_packet(s: &str) -> Packet {
-    //     match s.chars().next() {
-    //         Some('[') => {
-    //             let mut p = Vec::new();
-    //             let mut i = 1;
-    //             let mut tmp = String::from("");
-    //             for c in s.chars().skip(1) {
-    //                 if c == '[' {
-    //                     i += 1;
-    //                     tmp.push(c);
-    //                 } else if c == ']' {
-    //                     i -= 1;
-    //                     if i == 0 {
-    //                         p.push(to_packet(&tmp));}
-    //                     tmp.push(c);
-    //                 } else if c == ',' && i == 1 {
-    //                     p.push(to_packet(&tmp));
-    //                     tmp = String::new();
-    //                 } else {
-    //                     tmp.push(c);
-    //                 }
-    //             }
-    //             List(p)
-    //         }
-    //         Some(_) => El(s.parse().unwrap()),
-    //         None => List(vec![]),
-    //     }
-    // }
     let sum1 = input
         .lines()
         .filter(|x| !x.is_empty())
-        .map(|line| Packet::try_from(serde_json::from_str::<Value>(line).unwrap()).unwrap())
+        .map(|line| Packet::try_from(from_str::<Value>(line).unwrap()).unwrap())
         .tuples::<(_, _)>()
-        .map(|(x, y)| leq(&x, &y))
         .enumerate()
-        .fold(0, |n, (i, x)| if x == Less {n+i+1} else { n});
-    Solution::Isize(sum1 as isize, 0)
+        .fold(
+            0,
+            |n, (i, (x, y))| if leq(&x, &y) == Less { n + i + 1 } else { n },
+        );
+
+    let div1 = Packet::try_from(from_str::<Value>("[[2]]").unwrap()).unwrap();
+    let div2 = Packet::try_from(from_str::<Value>("[[6]]").unwrap()).unwrap();
+
+    let (s1, s2): (isize, isize) = input
+        .lines()
+        .filter(|x| !x.is_empty())
+        .map(|line| Packet::try_from(from_str::<Value>(line).unwrap()).unwrap())
+        .fold((1, 2), |(s1, s2), p| {
+            match (leq(&p, &div1), leq(&p, &div2)) {
+                (Less, _) => (s1 + 1, s2 + 1),
+                (_, Less) => (s1, s2 + 1),
+                _ => (s1, s2),
+            }
+        });
+    Solution::Isize(sum1 as isize, s1 * s2)
 }

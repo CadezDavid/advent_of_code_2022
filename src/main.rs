@@ -30,7 +30,15 @@ fn main() {
         .parse()
         .expect("First argument should be a number.");
 
-    let file_path = String::from("data/day") + &day.to_string() + ".in";
+    let test = args.get(2) == Some(&String::from("test"));
+
+    let file_path;
+    if test {
+        file_path = String::from("data/day") + &day.to_string() + "_test.in";
+    } else {
+        file_path = String::from("data/day") + &day.to_string() + ".in";
+    }
+
     let contents = fs::read_to_string(file_path).expect("Wheres the file??");
 
     let solution: Solution;
