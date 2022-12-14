@@ -1,15 +1,18 @@
 use crate::Solution;
 use std::collections::VecDeque;
 pub fn solve(input: &str) -> Solution {
-    let mut area: Vec<char> = input.lines().flat_map(|line| line.chars()).collect();
+    let mut area: Vec<isize> = input
+        .lines()
+        .flat_map(|line| line.chars().map(|c| c as isize))
+        .collect();
 
     let w = input.chars().position(|x| x == '\n').unwrap() as isize;
     let h = input.chars().filter(|x| *x == '\n').count() as isize;
 
-    let start = area.iter().position(|c| *c == 'S').unwrap();
-    let end = area.iter().position(|c| *c == 'E').unwrap();
-    area[start] = 'a';
-    area[end] = 'z';
+    let start = area.iter().position(|c| *c == 'S' as isize).unwrap();
+    let end = area.iter().position(|c| *c == 'E' as isize).unwrap();
+    area[start] = 'a' as isize;
+    area[end] = 'z' as isize;
 
     let directions: Vec<isize> = vec![-w, w, -1, 1];
 
@@ -39,9 +42,7 @@ pub fn solve(input: &str) -> Solution {
             directions
                 .iter()
                 .map(|di| i as isize + *di)
-                .filter(|j| {
-                    0 <= *j && *j < h * w && area[i] as isize >= area[*j as usize] as isize - 1
-                })
+                .filter(|j| 0 <= *j && *j < h * w && area[i] >= area[*j as usize] - 1)
                 .map(|j| j as usize)
                 .collect()
         })
@@ -52,9 +53,7 @@ pub fn solve(input: &str) -> Solution {
             directions
                 .iter()
                 .map(|di| i as isize + *di)
-                .filter(|j| {
-                    0 <= *j && *j < h * w && area[i] as isize <= area[*j as usize] as isize + 1
-                })
+                .filter(|j| 0 <= *j && *j < h * w && area[i] <= area[*j as usize] + 1)
                 .map(|j| j as usize)
                 .collect()
         })
@@ -66,7 +65,7 @@ pub fn solve(input: &str) -> Solution {
         end,
         area.iter()
             .enumerate()
-            .filter_map(|(i, c)| if *c == 'a' { Some(i) } else { None })
+            .filter_map(|(i, c)| if *c == 'a' as isize { Some(i) } else { None })
             .collect(),
     );
 
