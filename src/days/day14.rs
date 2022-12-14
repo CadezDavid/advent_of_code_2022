@@ -3,7 +3,7 @@ use itertools::Itertools;
 use std::cmp::{max, min};
 use std::collections::HashSet;
 pub fn solve(input: &str) -> Solution {
-    let area: HashSet<(isize, isize)> = HashSet::from_iter(
+    let mut area: HashSet<(isize, isize)> = HashSet::from_iter(
         input
             .lines()
             .flat_map(|line| {
@@ -19,35 +19,29 @@ pub fn solve(input: &str) -> Solution {
 
     let floor = area.iter().map(|(_, y)| y).max().unwrap() + 2;
 
-    let mut count1 = 0;
+    let mut count = 0;
     let dir = [(1, 1), (-1, 1), (0, 1)].into_iter();
     let mut c = (500, 0);
     let mut todo = vec![c];
-    let mut area1 = area.clone();
-    while !todo.is_empty() && c.1 < floor {
+    while !todo.is_empty() && c.1 < floor - 2 {
         c = todo.pop().unwrap();
         todo.extend(
             dir.clone()
                 .map(|(dx, dy)| (c.0 + dx, c.1 + dy))
-                .filter(|p| !area1.contains(p)),
+                .filter(|p| !area.contains(p)),
         );
-        count1 += 1;
-        area1.insert(c);
+        count += 1;
+        area.insert(c);
     }
-
-    let mut count2 = 0;
-    c = (500, 0);
-    todo = vec![c];
-    let mut area2 = area.clone();
-    while !todo.is_empty() {
-        c = todo.pop().unwrap();
+    let sum1 = count - floor + 1;
+    while let Some(c) = todo.pop() {
         todo.extend(
             dir.clone()
                 .map(|(dx, dy)| (c.0 + dx, c.1 + dy))
-                .filter(|p| p.1 < floor && !area2.contains(p)),
+                .filter(|p| p.1 < floor && !area.contains(p)),
         );
-        count2 += 1;
-        area2.insert(c);
+        count += 1;
+        area.insert(c);
     }
-    Solution::Isize(count1 - floor - 1, count2)
+    Solution::Isize(sum1, count)
 }
