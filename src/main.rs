@@ -3,6 +3,7 @@ use days::{
     day1, day10, day11, day12, day13, day14, day15, day16, day17, day18, day19, day2, day20, day21,
     day22, day23, day24, day25, day3, day4, day5, day6, day7, day8, day9,
 };
+use std::time::Instant;
 
 use std::env;
 use std::fmt;
@@ -43,6 +44,7 @@ fn main() {
 
     let solution: Solution;
 
+    let start = Instant::now();
     match day {
         1 => solution = day1::solve(&contents),
         2 => solution = day2::solve(&contents),
@@ -71,6 +73,7 @@ fn main() {
         25 => solution = day25::solve(&contents),
         _ => unimplemented!(),
     }
+    let time = start.elapsed();
 
-    println!("Solutions for day {}:\n{}", day, solution)
+    println!("Solutions for day {}:\n{} in {}", day, solution, time.as_micros())
 }
